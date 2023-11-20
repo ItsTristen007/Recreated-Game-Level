@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.168, y: 2.476, z: 0.053679507}
-  m_LocalScale: {x: 0.045, y: 0.045, z: 1}
+  m_LocalScale: {x: 0.06, y: 0.06, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_Size: {x: 6.67, y: 6.66}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &6925620228940347553
@@ -97,9 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47836292804c8a04d9c6d3b5ae4a87e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  I: {fileID: 21300000, guid: d58b11244072f74468aa90bef1d90462, type: 3}
+  I: {fileID: 21300000, guid: 3979df3652170f749ab90e89b21bbb5b, type: 3}
   L: {fileID: 0}
-  J: {fileID: 0}
-  S: {fileID: 0}
-  Z: {fileID: 0}
-  O: {fileID: 0}
+  J: {fileID: 21300000, guid: 6e6c363b099585c49a847d594365e104, type: 3}
+  S: {fileID: 21300000, guid: e7be2ed320d4c7d46899c4ea4ac76fae, type: 3}
+  Z: {fileID: 21300000, guid: ce3f7b8cb6d565e4583363fcc4d600a1, type: 3}
+  O: {fileID: 21300000, guid: 5195b555b14098346b44bddf9d4036ff, type: 3}
+  T: {fileID: 21300000, guid: c0d63d2de92554e4aafc3af5f997b61c, type: 3}

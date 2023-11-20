@@ -25,7 +25,32 @@ public class Tetrimino : MonoBehaviour
             case "T2": 
             case "T3": 
             case "T4": 
-                this.GetComponent<SpriteRenderer>().sprite = I; break;
+                this.GetComponent<SpriteRenderer>().sprite = T; break;
+            case "Z1": 
+            case "Z2": 
+            case "Z3": 
+            case "Z4": 
+                this.GetComponent<SpriteRenderer>().sprite = Z; break;
+            case "S1": 
+            case "S2": 
+            case "S3": 
+            case "S4": 
+                this.GetComponent<SpriteRenderer>().sprite = S; break;
+            case "L1": 
+            case "L2": 
+            case "L3": 
+            case "L4": 
+                this.GetComponent<SpriteRenderer>().sprite = L; break;
+            case "J1": 
+            case "J2": 
+            case "J3": 
+            case "J4": 
+                this.GetComponent<SpriteRenderer>().sprite = J; break;
+            case "O1": 
+            case "O2": 
+            case "O3": 
+            case "O4": 
+                this.GetComponent<SpriteRenderer>().sprite = O; break;
         }
     }
 

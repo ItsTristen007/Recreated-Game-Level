@@ -31,15 +31,14 @@ public class Game : MonoBehaviour
     
     void Start()
     {
-        int n = Random.Range(0, 6);
+        int n = Random.Range(0, 7);
         switch (n)
         {
             case 0:
                 nextBlock = "I";
                 break;
             case 1:
-                //nextBlock = "L";
-                nextBlock = "J";
+                nextBlock = "L";
                 break;
             case 2:
                 nextBlock = "J";
@@ -57,15 +56,14 @@ public class Game : MonoBehaviour
                 nextBlock = "T";
                 break;
         }
-        n = Random.Range(0, 6);
+        n = Random.Range(0, 7);
         switch (n)
         {
             case 0:
                 nextnextBlock = "I";
                 break;
             case 1:
-                //nextnextBlock = "L";
-                nextnextBlock = "J";
+                nextnextBlock = "L";
                 break;
             case 2:
                 nextnextBlock = "J";
@@ -83,15 +81,14 @@ public class Game : MonoBehaviour
                 nextnextBlock = "T";
                 break;
         }
-        n = Random.Range(0, 6);
+        n = Random.Range(0, 7);
         switch (n)
         {
             case 0:
                 nextnextnextBlock = "I";
                 break;
             case 1:
-                //nextnextnextBlock = "L";
-                nextnextnextBlock = "J";
+                nextnextnextBlock = "L";
                 break;
             case 2:
                 nextnextnextBlock = "J";
@@ -145,7 +142,7 @@ public class Game : MonoBehaviour
     }
     void UpdateBlocksRight()
     {
-        if (currentBlock == "O" || currentBlock == "Z")
+        if (currentBlock == "O" || currentBlock == "Z" || currentBlock == "L" || currentBlock == "T")
         {
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
             {
@@ -178,7 +175,7 @@ public class Game : MonoBehaviour
     }
     void UpdateBlocksLeft()
     {
-        if (currentBlock == "O" || currentBlock == "Z")
+        if (currentBlock == "O" || currentBlock == "Z" || currentBlock == "L" || currentBlock == "T")
         {
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
@@ -315,15 +312,14 @@ public class Game : MonoBehaviour
         nextBlock = nextnextBlock;
         nextnextBlock = nextnextnextBlock;
         
-        int n = Random.Range(0, 6);
+        int n = Random.Range(0, 7);
         switch (n)
         {
             case 0:
                 nextnextnextBlock = "I";
                 break;
             case 1:
-                //nextnextnextBlock = "L";
-                nextnextnextBlock = "J";
+                nextnextnextBlock = "L";
                 break;
             case 2:
                 nextnextnextBlock = "J";

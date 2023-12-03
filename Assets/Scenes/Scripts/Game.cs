@@ -28,104 +28,43 @@ public class Game : MonoBehaviour
     int block3X; int block3Y; string name3;
     int block4X; int block4Y; string name4;
     
-    
-    void Start()
-    {
-        int n = Random.Range(0, 7);
-        switch (n)
-        {
-            case 0:
-                nextBlock = "I";
-                break;
-            case 1:
-                nextBlock = "L";
-                break;
-            case 2:
-                nextBlock = "J";
-                break;
-            case 3:
-                nextBlock = "O";
-                break;
-            case 4:
-                nextBlock = "S";
-                break;
-            case 5:
-                nextBlock = "Z";
-                break;
-            case 6:
-                nextBlock = "T";
-                break;
-        }
-        n = Random.Range(0, 7);
-        switch (n)
-        {
-            case 0:
-                nextnextBlock = "I";
-                break;
-            case 1:
-                nextnextBlock = "L";
-                break;
-            case 2:
-                nextnextBlock = "J";
-                break;
-            case 3:
-                nextnextBlock = "O";
-                break;
-            case 4:
-                nextnextBlock = "S";
-                break;
-            case 5:
-                nextnextBlock = "Z";
-                break;
-            case 6:
-                nextnextBlock = "T";
-                break;
-        }
-        n = Random.Range(0, 7);
-        switch (n)
-        {
-            case 0:
-                nextnextnextBlock = "I";
-                break;
-            case 1:
-                nextnextnextBlock = "L";
-                break;
-            case 2:
-                nextnextnextBlock = "J";
-                break;
-            case 3:
-                nextnextnextBlock = "O";
-                break;
-            case 4:
-                nextnextnextBlock = "S";
-                break;
-            case 5:
-                nextnextnextBlock = "Z";
-                break;
-            case 6:
-                nextnextnextBlock = "T";
-                break;
-        }
-        
-    }
 
     void UpdateBlocksDown()
     {
+        int count = 0;
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
         {
             Tetrimino tet = obj.GetComponent<Tetrimino>();
-            if (tet.GetY() != 19 && board[tet.GetX(), tet.GetY() + 1] == null)
+            if (tet.GetY() + 1 != 20 && board[tet.GetX(), tet.GetY() + 1] == null)
             {
-                board[tet.GetX(), tet.GetY()] = null;
-                board[tet.GetX(), tet.GetY() + 1] = obj;
-                tet.SetY(tet.GetY() + 1);
-                tet.SetCoords();
+                tet.SetNextY(tet.GetY() + 1);
+                count++;
                 
+            }
+            else if (tet.GetY() + 1 != 20 && !board[tet.GetX(), tet.GetY() + 1].CompareTag("Solid"))
+            {
+                tet.SetNextY(tet.GetY() + 1);
+                count++;
             }
             else
             {
-                stop = !stop;
-                break;
+                if (tet.GetY() + 1 >= 20 || board[tet.GetX(), tet.GetY() + 1].CompareTag("Solid"))
+                {
+                    stop = true;
+                    break;
+                }
+            }
+        }
+
+        if (count == 4)
+        {
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
+            {
+                Tetrimino tet = obj.GetComponent<Tetrimino>();
+                board[tet.GetX(), tet.GetY()] = null;
+                tet.SetY(tet.GetNextY());
+                board[tet.GetX(), tet.GetY()] = obj;
+                tet.SetCoords();
             }
         }
 
@@ -135,74 +74,155 @@ public class Game : MonoBehaviour
             {
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
                 tet.tag = "Solid";
+                tet.name = "Solid";
             }
         }
 
         stop = false;
     }
+    
     void UpdateBlocksRight()
     {
-        if (currentBlock == "O" || currentBlock == "Z" || currentBlock == "L" || currentBlock == "T")
+        int count = 0;
+        bool moved = false;
+        while (!moved)
         {
+
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
             {
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
-                if (tet.GetY() != 19 && board[tet.GetX() + 1, tet.GetY()] == null)
+                if (board[tet.GetX() + 1, tet.GetY()] == null)
                 {
-                    board[tet.GetX(), tet.GetY()] = null;
-                    board[tet.GetX() + 1, tet.GetY()] = obj;
-                    tet.SetX(tet.GetX() + 1);
-                    tet.SetCoords();
+                    tet.SetNextX(tet.GetX() + 1);
+                    count++;
+                    moved = true;
+                }
+                else if (!board[tet.GetX() + 1, tet.GetY()].CompareTag("Solid"))
+                {
+                    tet.SetNextX(tet.GetX() + 1);
+                    count++;
+                    moved = true;
                 }
                 else break;
             }
+        
+
+            if (!moved)
+            {
+                {
+                    foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+                    {
+                        Tetrimino tet = obj.GetComponent<Tetrimino>();
+                        if (tet.GetY() != 19 && board[tet.GetX() + 1, tet.GetY()] == null)
+                        {
+                            tet.SetNextX(tet.GetX() + 1);
+                            count++;
+                            moved = true;
+                        }
+                        else if (!board[tet.GetX() + 1, tet.GetY()].CompareTag("Solid"))
+                        {
+                            tet.SetNextX(tet.GetX() + 1);
+                            count++;
+                            moved = true;
+                        }
+                        else break;
+                    }
+                }
+            }
         }
-        else
+        if (count == 4)
         {
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
-                if (tet.GetY() != 19 && board[tet.GetX() + 1, tet.GetY()] == null)
-                {
-                    board[tet.GetX(), tet.GetY()] = null;
-                    board[tet.GetX() + 1, tet.GetY()] = obj;
-                    tet.SetX(tet.GetX() + 1);
-                    tet.SetCoords();
-                }
-                else break;
+                board[tet.GetX(), tet.GetY()] = null;
+                tet.SetX(tet.GetNextX());
+                board[tet.GetX(), tet.GetY()] = obj;
+                tet.SetCoords();
             }
         }
     }
+
     void UpdateBlocksLeft()
     {
-        if (currentBlock == "O" || currentBlock == "Z" || currentBlock == "L" || currentBlock == "T")
+        int count = 0;
+        bool moved = false;
+        while (!moved)
         {
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
-                if (tet.GetY() != 19 && board[tet.GetX() - 1, tet.GetY()] == null)
+                if (board[tet.GetX() - 1, tet.GetY()] == null)
                 {
-                    board[tet.GetX(), tet.GetY()] = null;
-                    board[tet.GetX() - 1, tet.GetY()] = obj;
-                    tet.SetX(tet.GetX() - 1);
-                    tet.SetCoords();
+                    tet.SetNextX(tet.GetX() - 1);
+                    count++;
+                    moved = true;
+                }
+                else if (!board[tet.GetX() - 1, tet.GetY()].CompareTag("Solid"))
+                {
+                    tet.SetNextX(tet.GetX() - 1);
+                    count++;
+                    moved = true;
                 }
                 else break;
             }
+
+            if (!moved)
+            {
+                foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
+                {
+                    Tetrimino tet = obj.GetComponent<Tetrimino>();
+                    if (tet.GetY() != 19 && board[tet.GetX() - 1, tet.GetY()] == null)
+                    {
+                        tet.SetNextX(tet.GetX() - 1);
+                        count++;
+                        moved = true;
+                    }
+                    else if (!board[tet.GetX() - 1, tet.GetY()].CompareTag("Solid"))
+                    {
+                        tet.SetNextX(tet.GetX() - 1);
+                        count++;
+                        moved = true;
+                    }
+                    else break;
+                }
+            }
         }
-        else
+        if (count == 4)
         {
-            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player").Reverse())
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
-                if (tet.GetY() != 19 && board[tet.GetX() - 1, tet.GetY()] == null)
-                {
-                    board[tet.GetX(), tet.GetY()] = null;
-                    board[tet.GetX() - 1, tet.GetY()] = obj;
-                    tet.SetX(tet.GetX() - 1);
-                    tet.SetCoords();
-                }
-                else break;
+                board[tet.GetX(), tet.GetY()] = null;
+                tet.SetX(tet.GetNextX());
+                board[tet.GetX(), tet.GetY()] = obj;
+                tet.SetCoords();
+            }
+        }
+    }
+
+    void UpdateRotate()
+    {
+        int count = 0;
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            Tetrimino tet = obj.GetComponent<Tetrimino>();
+            int nextX = tet.GetRotatePositionX();
+            int nextY = tet.GetRotatePositionY();
+            if ((nextX >= 0 && nextX <= 9) 
+                && (nextY >= 0 && nextY <= 19) && board[nextX, nextY] == null) count++;
+            else if (!board[nextX, nextY].CompareTag("Solid"))count++;
+            else break;
+        }
+
+        if (count == 4)
+        {
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                Tetrimino tet = obj.GetComponent<Tetrimino>();
+                board[tet.GetX(), tet.GetY()] = null;
+                tet.ExecuteRotation();
+                board[tet.GetX(), tet.GetY()] = obj;
             }
         }
     }
@@ -285,12 +305,12 @@ public class Game : MonoBehaviour
             else timer++;
 
         }
-
+        
+        if (Input.GetKeyDown(KeyCode.UpArrow)) UpdateRotate();
+        
         if (Input.GetKeyDown(KeyCode.RightArrow)) UpdateBlocksRight();
         
         if (Input.GetKeyDown(KeyCode.LeftArrow)) UpdateBlocksLeft();
-        
-        
         
         if (timer >= fallSpeed)
         {
@@ -298,15 +318,16 @@ public class Game : MonoBehaviour
             timer = 0;
         }
         timer++;
-
+        
+        
         if (GameObject.FindGameObjectsWithTag("Player").Length < 4)
         {
             NewBlock(nextBlock);
-            blockOrder();
+            BlockOrder();
         }
     }
 
-    private void blockOrder()
+    private void BlockOrder()
     {
         currentBlock = nextBlock;
         nextBlock = nextnextBlock;
@@ -338,4 +359,85 @@ public class Game : MonoBehaviour
                 break;
         }
     }
+    
+    void Start()
+    {
+        int n = Random.Range(0, 7);
+        switch (n)
+        {
+            case 0:
+                nextBlock = "I";
+                break;
+            case 1:
+                nextBlock = "L";
+                break;
+            case 2:
+                nextBlock = "J";
+                break;
+            case 3:
+                nextBlock = "O";
+                break;
+            case 4:
+                nextBlock = "S";
+                break;
+            case 5:
+                nextBlock = "Z";
+                break;
+            case 6:
+                nextBlock = "T";
+                break;
+        }
+        n = Random.Range(0, 7);
+        switch (n)
+        {
+            case 0:
+                nextnextBlock = "I";
+                break;
+            case 1:
+                nextnextBlock = "L";
+                break;
+            case 2:
+                nextnextBlock = "J";
+                break;
+            case 3:
+                nextnextBlock = "O";
+                break;
+            case 4:
+                nextnextBlock = "S";
+                break;
+            case 5:
+                nextnextBlock = "Z";
+                break;
+            case 6:
+                nextnextBlock = "T";
+                break;
+        }
+        n = Random.Range(0, 7);
+        switch (n)
+        {
+            case 0:
+                nextnextnextBlock = "I";
+                break;
+            case 1:
+                nextnextnextBlock = "L";
+                break;
+            case 2:
+                nextnextnextBlock = "J";
+                break;
+            case 3:
+                nextnextnextBlock = "O";
+                break;
+            case 4:
+                nextnextnextBlock = "S";
+                break;
+            case 5:
+                nextnextnextBlock = "Z";
+                break;
+            case 6:
+                nextnextnextBlock = "T";
+                break;
+        }
+        
+    }
+    
 }

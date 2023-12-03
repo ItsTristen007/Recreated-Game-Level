@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,4 +11,8 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene("Tetris");
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return)) SceneManager.LoadScene("Tetris");
+    }
 }

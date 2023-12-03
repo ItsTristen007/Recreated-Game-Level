@@ -61,11 +61,11 @@ public class Tetrimino : MonoBehaviour
         float x = this.x;
         float y = this.y;
 
-        x *= 0.3f;
-        y *= -0.3f;
+        x *= 0.42f;
+        y *= -0.42f;
 
-        x += -1.35f;
-        y += 2.9f;
+        x += -1.9f;
+        y += 4.1f;
 
         this.transform.position = new Vector3(x, y, -1.0f);
     }

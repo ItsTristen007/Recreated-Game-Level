@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 
@@ -40,6 +42,12 @@ public class Game : MonoBehaviour
     private int clearedLines = 0;
     private int score = 0;
     private int level = 0;
+
+    private bool gameOver = false;
+    private int endGameTimer = 0;
+
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI currentScore;
     
     
     // Audio 
@@ -308,9 +316,9 @@ public class Game : MonoBehaviour
 
         clearedLines += full;
         if (full == 1) score += 100 * level;
-        if (full == 2) score += 300 * level;
-        if (full == 3) score += 500 * level;
-        if (full == 4) score += 800 * level;
+        else if (full == 2) score += 300 * level;
+        else if (full == 3) score += 500 * level;
+        else if (full == 4) score += 800 * level;
     }
     
     void Insurance()
@@ -404,45 +412,64 @@ public class Game : MonoBehaviour
     void Update()
     {
 
-        Insurance();
-        Levels();
-        
-        if (player == 1)
+        currentScore.text = score.ToString();
+
+        if (!gameOver)
         {
-            if (Input.GetKey(KeyCode.DownArrow)) timer++;
+            Insurance();
+            Levels();
 
-            if (Input.GetKeyDown(KeyCode.UpArrow)) UpdateRotate();
+            if (player == 1)
+            {
+                if (Input.GetKey(KeyCode.DownArrow)) timer++;
 
-            if (Input.GetKeyDown(KeyCode.RightArrow)) UpdateBlocksRight();
+                if (Input.GetKeyDown(KeyCode.UpArrow)) UpdateRotate();
 
-            if (Input.GetKeyDown(KeyCode.LeftArrow)) UpdateBlocksLeft();
+                if (Input.GetKeyDown(KeyCode.RightArrow)) UpdateBlocksRight();
+
+                if (Input.GetKeyDown(KeyCode.LeftArrow)) UpdateBlocksLeft();
+            }
+            else
+            {
+                if (Input.GetKey(KeyCode.S)) timer++;
+
+                if (Input.GetKeyDown(KeyCode.W)) UpdateRotate();
+
+                if (Input.GetKeyDown(KeyCode.D)) UpdateBlocksRight();
+
+                if (Input.GetKeyDown(KeyCode.A)) UpdateBlocksLeft();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                HoldBlock();
+                held = true;
+            }
+
+            if (stop)
+            {
+                for (int y = 0; y <= 3; y++)
+                {
+                    for (int x = 0; x < boardX; x++)
+                    {
+                        if (board[x, y] != null)
+                        {
+                            if (board[x, y].CompareTag("Solid")) gameOver = true;
+                        }
+                    }
+                }
+                LineClear();
+            }
+
+            stop = false;
+
+            if (GameObject.FindGameObjectsWithTag("Player").Length < 4)
+            {
+                NewBlock(nextBlock);
+                BlockOrder();
+            }
         }
-        else
-        {
-            if (Input.GetKey(KeyCode.S)) timer++;
-            
-            if (Input.GetKeyDown(KeyCode.W)) UpdateRotate();
-
-            if (Input.GetKeyDown(KeyCode.D)) UpdateBlocksRight();
-
-            if (Input.GetKeyDown(KeyCode.A)) UpdateBlocksLeft();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            HoldBlock();
-            held = true;
-        } 
-        
-        if (stop) LineClear();
-        
-        stop = false;
-        
-        if (GameObject.FindGameObjectsWithTag("Player").Length < 4)
-        {
-            NewBlock(nextBlock);
-            BlockOrder();
-        }
+        else GameOver();
     }
     
     private void FixedUpdate()
@@ -455,9 +482,24 @@ public class Game : MonoBehaviour
         timer++;
     }
 
+    private void GameOver()
+    {
+        if (endGameTimer >= 400) gameOverText.text = "GAME OVER";
+        GameObject obj = GameObject.Find("board");
+        SaveScore sav = obj.GetComponent<SaveScore>();
+        if (score > sav.GetScore()) sav.SetScore(score);
+        endGameTimer++;
+        if (endGameTimer >= 1500)
+        {
+            SceneManager.LoadScene("HighScoreScreen");
+        }
+    }
+
     private void HoldBlock()
     {
         string limbo;
+        GameObject obj = GameObject.Find("Held");
+        QueuePiece hpi = obj.GetComponent<QueuePiece>();
         if (!held)
         {
             if (holding.Equals(""))
@@ -467,6 +509,7 @@ public class Game : MonoBehaviour
                 holding = currentBlock;
                 NewBlock(nextBlock);
                 BlockOrder();
+                hpi.SetBlock(holding);
             }
             else
             {
@@ -476,6 +519,7 @@ public class Game : MonoBehaviour
                 holding = currentBlock;
                 currentBlock = limbo;
                 NewBlock(currentBlock);
+                hpi.SetBlock(holding);
             }
         }
     }
@@ -501,9 +545,12 @@ public class Game : MonoBehaviour
 
     private void BlockOrder()
     {
+        GameObject obj = GameObject.Find("Queue");
+        QueuePiece qpi = obj.GetComponent<QueuePiece>();
         currentBlock = nextBlock;
         nextBlock = nextnextBlock;
         nextnextBlock = nextnextnextBlock;
+        qpi.SetBlock(nextBlock);
         
         int n = Random.Range(0, 7);
         switch (n)
@@ -536,7 +583,7 @@ public class Game : MonoBehaviour
     {
         if (clearedLines < 10)
         {
-            fallSpeed = 300;
+            fallSpeed = 275;
             level = 1;
         }
         

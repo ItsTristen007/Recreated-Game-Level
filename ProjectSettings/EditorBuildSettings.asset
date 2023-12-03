@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tetris.unity
     guid: 002358a03bc32ff45a87e3b29891d59f
+  - enabled: 1
+    path: Assets/Scenes/HighScoreScreen.unity
+    guid: 6fa5d5b1ad52db144a6e49cc468e0632
   m_configObjects: {}

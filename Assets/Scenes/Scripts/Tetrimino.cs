@@ -429,8 +429,8 @@ public class Tetrimino : MonoBehaviour
 
     public void ExecuteRotation()
     {
-        x = nextX;
-        y = nextY;
+        SetX(nextX);
+        SetY(nextY);
         SetCoords();
     }
 

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 public class Game : MonoBehaviour
@@ -11,9 +13,16 @@ public class Game : MonoBehaviour
     public GameObject block;
     private static int boardX = 10;
     private static int boardY = 20;
+    
+    int player = 1;
+
+    private string holding = "";
+
+    private bool held = false;
+    
     [SerializeField] private GameObject[,] board = new GameObject[boardX,boardY];
 
-    private int fallSpeed = 600;
+    private int fallSpeed = 300;
     private bool stop = false;
 
     private string currentBlock;
@@ -27,6 +36,10 @@ public class Game : MonoBehaviour
     int block2X; int block2Y; string name2;
     int block3X; int block3Y; string name3;
     int block4X; int block4Y; string name4;
+
+    private int clearedLines = 0;
+    private int score = 0;
+    private int level = 0;
     
 
     void UpdateBlocksDown()
@@ -76,9 +89,13 @@ public class Game : MonoBehaviour
                 tet.tag = "Solid";
                 tet.name = "Solid";
             }
+
+            held = false;
+            if (player == 1) player = 2;
+            else player = 1;
         }
 
-        stop = false;
+        
     }
     
     void UpdateBlocksRight()
@@ -226,6 +243,80 @@ public class Game : MonoBehaviour
             }
         }
     }
+    
+    void LineClear()
+    {
+        int count;
+        int full = 0;
+        
+        
+        for (int y = 0; y < boardY; y++)
+        {
+            count = 0;
+            for (int x = 0; x < boardX; x++)
+            {
+                if (board[x, y] != null) count++;
+            }
+            
+            if (count == 10)
+            {
+                full++;
+                for (int x = 0; x < boardX; x++)
+                {
+                    Destroy(board[x, y]);
+                    board[x, y] = null;
+                }
+
+                for (int a = y; a > 0; a--)
+                {
+                    for (int x = 0; x < boardX; x++)
+                    {
+                        if (board[x, a] != null)
+                        {
+                            Tetrimino tet = board[x, a].GetComponent<Tetrimino>();
+                            if (tet.GetY() + 1 != 20 && board[tet.GetX(), tet.GetY() + 1] == null)
+                            {
+                                board[tet.GetX(), tet.GetY()+1] = board[x, a];
+                                board[tet.GetX(), tet.GetY()] = null;
+                                tet.SetY(tet.GetY() + 1);
+                                tet.SetCoords();
+                            }
+                        }
+
+                    } 
+                }
+            }
+        }
+
+        clearedLines += full;
+        if (full == 1) score += 100 * level;
+        if (full == 2) score += 300 * level;
+        if (full == 3) score += 500 * level;
+        if (full == 4) score += 800 * level;
+    }
+    
+    void Insurance()
+    {
+        for (int y = 0; y < boardY; y++)
+        {
+            for (int x = 0; x < boardX; x++)
+            {
+                board[x, y] = null;
+            }
+
+        }
+        
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            Tetrimino tet = obj.GetComponent<Tetrimino>();
+            board[tet.GetX(), tet.GetY()] = obj;
+        }
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Solid"))
+        {
+            Tetrimino tet = obj.GetComponent<Tetrimino>();
+            board[tet.GetX(), tet.GetY()] = obj;
+        }
+    }
 
     public GameObject Create(string name, int x, int y)
     {
@@ -295,35 +386,96 @@ public class Game : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKey(KeyCode.DownArrow))
+        Insurance();
+        Levels();
+        
+        if (player == 1)
         {
-            if (fallSpeed > 300)
-            {
-                timer++;
-                timer++;
-            }
-            else timer++;
+            if (Input.GetKey(KeyCode.DownArrow)) timer++;
 
+            if (Input.GetKeyDown(KeyCode.UpArrow)) UpdateRotate();
+
+            if (Input.GetKeyDown(KeyCode.RightArrow)) UpdateBlocksRight();
+
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) UpdateBlocksLeft();
         }
+        else
+        {
+            if (Input.GetKey(KeyCode.S)) timer++;
+            
+            if (Input.GetKeyDown(KeyCode.W)) UpdateRotate();
+
+            if (Input.GetKeyDown(KeyCode.D)) UpdateBlocksRight();
+
+            if (Input.GetKeyDown(KeyCode.A)) UpdateBlocksLeft();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            HoldBlock();
+            held = true;
+        } 
         
-        if (Input.GetKeyDown(KeyCode.UpArrow)) UpdateRotate();
+        if (stop) LineClear();
         
-        if (Input.GetKeyDown(KeyCode.RightArrow)) UpdateBlocksRight();
+        stop = false;
         
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) UpdateBlocksLeft();
-        
+        if (GameObject.FindGameObjectsWithTag("Player").Length < 4)
+        {
+            NewBlock(nextBlock);
+            BlockOrder();
+        }
+    }
+    
+    private void FixedUpdate()
+    {
         if (timer >= fallSpeed)
         {
             UpdateBlocksDown();
             timer = 0;
         }
         timer++;
-        
-        
-        if (GameObject.FindGameObjectsWithTag("Player").Length < 4)
+    }
+
+    private void HoldBlock()
+    {
+        string limbo;
+        if (!held)
         {
-            NewBlock(nextBlock);
-            BlockOrder();
+            if (holding.Equals(""))
+            {
+                ClearPlayer();
+                holding = currentBlock;
+                NewBlock(nextBlock);
+                BlockOrder();
+            }
+            else
+            {
+                ClearPlayer();
+                limbo = holding;
+                holding = currentBlock;
+                currentBlock = limbo;
+                NewBlock(currentBlock);
+            }
+        }
+    }
+
+    private void ClearPlayer()
+    {
+        for (int y = 0; y < boardY; y++)
+        {
+            for (int x = 0; x < boardX; x++)
+            {
+                if (board[x, y] != null)
+                {
+                    if (board[x, y].CompareTag("Player"))
+                    {
+                        Destroy(board[x, y]);
+                        board[x, y] = null;
+                    }
+                }
+            }
+
         }
     }
 
@@ -357,6 +509,45 @@ public class Game : MonoBehaviour
             case 6:
                 nextnextnextBlock = "T";
                 break;
+        }
+    }
+    
+    private void Levels()
+    {
+        if (clearedLines < 10)
+        {
+            fallSpeed = 300;
+            level = 1;
+        }
+        
+        if (clearedLines < 30)
+        {
+            fallSpeed = 250;
+            level = 2;
+        }
+
+        if (clearedLines < 60)
+        {
+            fallSpeed = 225;
+            level = 3;
+        }
+
+        if (clearedLines < 100)
+        {
+            fallSpeed = 200;
+            level = 4;
+        }
+
+        if (clearedLines < 150)
+        {
+            fallSpeed = 175;
+            level = 5;
+        }
+
+        if (clearedLines < 10)
+        {
+            fallSpeed = 125;
+            level = 6;
         }
     }
     

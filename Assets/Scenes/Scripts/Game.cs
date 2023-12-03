@@ -41,7 +41,13 @@ public class Game : MonoBehaviour
     private int score = 0;
     private int level = 0;
     
-
+    
+    // Audio 
+    [SerializeField] private AudioSource lineClearSfx;
+    [SerializeField] private AudioSource blockPlacedSfx;
+    [SerializeField] private AudioSource blockHeldSfx;
+    [SerializeField] private AudioSource moveSfx;
+    
     void UpdateBlocksDown()
     {
         int count = 0;
@@ -88,6 +94,7 @@ public class Game : MonoBehaviour
                 Tetrimino tet = obj.GetComponent<Tetrimino>();
                 tet.tag = "Solid";
                 tet.name = "Solid";
+                blockPlacedSfx.Play();
             }
 
             held = false;
@@ -157,6 +164,7 @@ public class Game : MonoBehaviour
                 board[tet.GetX(), tet.GetY()] = obj;
                 tet.SetCoords();
             }
+            moveSfx.Play();
         }
     }
 
@@ -215,6 +223,7 @@ public class Game : MonoBehaviour
                 board[tet.GetX(), tet.GetY()] = obj;
                 tet.SetCoords();
             }
+            moveSfx.Play();
         }
     }
 
@@ -226,9 +235,17 @@ public class Game : MonoBehaviour
             Tetrimino tet = obj.GetComponent<Tetrimino>();
             int nextX = tet.GetRotatePositionX();
             int nextY = tet.GetRotatePositionY();
-            if ((nextX >= 0 && nextX <= 9) 
-                && (nextY >= 0 && nextY <= 19) && board[nextX, nextY] == null) count++;
-            else if (!board[nextX, nextY].CompareTag("Solid"))count++;
+            if ((nextX >= 0 && nextX <= 9)
+                && (nextY >= 0 && nextY <= 19) && board[nextX, nextY] == null)
+            {
+                count++;
+                moveSfx.Play();
+            }
+            else if (!board[nextX, nextY].CompareTag("Solid"))
+            {
+                count++;
+                moveSfx.Play();
+            }
             else break;
         }
 
@@ -265,6 +282,7 @@ public class Game : MonoBehaviour
                 {
                     Destroy(board[x, y]);
                     board[x, y] = null;
+                    lineClearSfx.Play();
                 }
 
                 for (int a = y; a > 0; a--)
@@ -444,6 +462,7 @@ public class Game : MonoBehaviour
         {
             if (holding.Equals(""))
             {
+                blockHeldSfx.Play();
                 ClearPlayer();
                 holding = currentBlock;
                 NewBlock(nextBlock);
@@ -451,6 +470,7 @@ public class Game : MonoBehaviour
             }
             else
             {
+                blockHeldSfx.Play();
                 ClearPlayer();
                 limbo = holding;
                 holding = currentBlock;

@@ -24,7 +24,7 @@ public class Game : MonoBehaviour
     
     [SerializeField] private GameObject[,] board = new GameObject[boardX,boardY];
 
-    private int fallSpeed = 300;
+    private int fallSpeed = 25;
     private bool stop = false;
 
     private string currentBlock;
@@ -41,7 +41,7 @@ public class Game : MonoBehaviour
 
     private int clearedLines = 0;
     private int score = 0;
-    private int level = 0;
+    private int level = 1;
 
     private bool gameOver = false;
     private int endGameTimer = 0;
@@ -286,6 +286,7 @@ public class Game : MonoBehaviour
             if (count == 10)
             {
                 full++;
+                Debug.Log(full);
                 for (int x = 0; x < boardX; x++)
                 {
                     Destroy(board[x, y]);
@@ -313,12 +314,11 @@ public class Game : MonoBehaviour
                 }
             }
         }
-
-        clearedLines += full;
         if (full == 1) score += 100 * level;
         else if (full == 2) score += 300 * level;
         else if (full == 3) score += 500 * level;
         else if (full == 4) score += 800 * level;
+        clearedLines += full;
     }
     
     void Insurance()
@@ -360,10 +360,10 @@ public class Game : MonoBehaviour
         switch (block)
         {
             case "I": 
-                block1X = 4; block1Y = 1; name1 = block + "1";
-                block2X = 4; block2Y = 2; name2 = block + "2";
-                block3X = 4; block3Y = 3; name3 = block + "3";
-                block4X = 4; block4Y = 4; name4 = block + "4";
+                block1X = 5; block1Y = 1; name1 = block + "1";
+                block2X = 5; block2Y = 2; name2 = block + "2";
+                block3X = 5; block3Y = 3; name3 = block + "3";
+                block4X = 5; block4Y = 4; name4 = block + "4";
                 break;
             case "L":
                 block1X = 4; block1Y = 1; name1 = block + "1";
@@ -372,16 +372,16 @@ public class Game : MonoBehaviour
                 block4X = 5; block4Y = 3; name4 = block + "4";
                 break;
             case "J":
-                block1X = 4; block1Y = 1; name1 = block + "1";
-                block2X = 4; block2Y = 2; name2 = block + "2";
-                block3X = 4; block3Y = 3; name3 = block + "3";
-                block4X = 3; block4Y = 3; name4 = block + "4";
+                block1X = 5; block1Y = 1; name1 = block + "1";
+                block2X = 5; block2Y = 2; name2 = block + "2";
+                block3X = 5; block3Y = 3; name3 = block + "3";
+                block4X = 4; block4Y = 3; name4 = block + "4";
                 break;
             case "S":
-                block1X = 5; block1Y = 1; name1 = block + "1";
-                block2X = 4; block2Y = 1; name2 = block + "2";
-                block3X = 4; block3Y = 2; name3 = block + "3";
-                block4X = 3; block4Y = 2; name4 = block + "4";
+                block1X = 6; block1Y = 1; name1 = block + "1";
+                block2X = 5; block2Y = 1; name2 = block + "2";
+                block3X = 5; block3Y = 2; name3 = block + "3";
+                block4X = 4; block4Y = 2; name4 = block + "4";
                 break;
             case "Z":
                 block1X = 3; block1Y = 1; name1 = block + "1";
@@ -396,10 +396,10 @@ public class Game : MonoBehaviour
                 block4X = 5; block4Y = 2; name4 = block + "4";
                 break;
             case "T":
-                block1X = 3; block1Y = 1; name1 = block + "1";
-                block2X = 4; block2Y = 1; name2 = block + "2";
-                block3X = 5; block3Y = 1; name3 = block + "3";
-                block4X = 4; block4Y = 2; name4 = block + "4";
+                block1X = 4; block1Y = 1; name1 = block + "1";
+                block2X = 5; block2Y = 1; name2 = block + "2";
+                block3X = 6; block3Y = 1; name3 = block + "3";
+                block4X = 5; block4Y = 2; name4 = block + "4";
                 break;
         }
 
@@ -484,12 +484,12 @@ public class Game : MonoBehaviour
 
     private void GameOver()
     {
-        if (endGameTimer >= 400) gameOverText.text = "GAME OVER";
+        if (endGameTimer >= 100) gameOverText.text = "GAME OVER";
         GameObject obj = GameObject.Find("board");
         SaveScore sav = obj.GetComponent<SaveScore>();
         if (score > sav.GetScore()) sav.SetScore(score);
         endGameTimer++;
-        if (endGameTimer >= 1500)
+        if (endGameTimer >= 200)
         {
             SceneManager.LoadScene("HighScoreScreen");
         }
@@ -581,40 +581,55 @@ public class Game : MonoBehaviour
     
     private void Levels()
     {
-        if (clearedLines < 10)
+        if (clearedLines > 6)
         {
-            fallSpeed = 275;
-            level = 1;
-        }
-        
-        if (clearedLines < 30)
-        {
-            fallSpeed = 250;
+            fallSpeed = 23;
             level = 2;
         }
-
-        if (clearedLines < 60)
+        
+        if (clearedLines > 12)
         {
-            fallSpeed = 225;
+            fallSpeed = 20;
             level = 3;
         }
 
-        if (clearedLines < 100)
+        if (clearedLines > 20)
         {
-            fallSpeed = 200;
+            fallSpeed = 17;
             level = 4;
         }
 
-        if (clearedLines < 150)
+        if (clearedLines > 30)
         {
-            fallSpeed = 175;
+            fallSpeed = 15;
             level = 5;
         }
 
-        if (clearedLines < 10)
+        if (clearedLines > 40)
         {
-            fallSpeed = 125;
+            fallSpeed = 13;
             level = 6;
+        }
+
+        if (clearedLines > 50)
+        {
+            fallSpeed = 10;
+            level = 7;
+        }
+        if (clearedLines > 60)
+        {
+            fallSpeed = 7;
+            level = 8;
+        }
+        if (clearedLines > 75)
+        {
+            fallSpeed = 5;
+            level = 9;
+        }
+        if (clearedLines > 90)
+        {
+            fallSpeed = 2;
+            level = 10;
         }
     }
     

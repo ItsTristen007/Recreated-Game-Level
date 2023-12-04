@@ -20,4 +20,8 @@ public class HSScreen : MonoBehaviour
         SceneManager.LoadScene("Tetris");
     }
     
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return)) SceneManager.LoadScene("Tetris");
+    }
 }

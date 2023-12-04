@@ -48,6 +48,7 @@ public class Game : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private TextMeshProUGUI currentScore;
+    [SerializeField] private TextMeshProUGUI levelText;
     
     
     // Audio 
@@ -413,6 +414,7 @@ public class Game : MonoBehaviour
     {
 
         currentScore.text = score.ToString();
+        levelText.text = "Level: " + level;
 
         if (!gameOver)
         {
@@ -444,6 +446,15 @@ public class Game : MonoBehaviour
             {
                 HoldBlock();
                 held = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+            {
+                while (!stop)
+                {
+                    UpdateBlocksDown();
+                    Insurance();
+                }
             }
 
             if (stop)
@@ -581,55 +592,34 @@ public class Game : MonoBehaviour
     
     private void Levels()
     {
-        if (clearedLines > 6)
+        if (clearedLines > 10)
         {
-            fallSpeed = 23;
+            fallSpeed = 20;
             level = 2;
         }
         
-        if (clearedLines > 12)
+        if (clearedLines > 15)
         {
-            fallSpeed = 20;
+            fallSpeed = 15;
             level = 3;
         }
 
-        if (clearedLines > 20)
+        if (clearedLines > 25)
         {
-            fallSpeed = 17;
+            fallSpeed = 12;
             level = 4;
-        }
-
-        if (clearedLines > 30)
-        {
-            fallSpeed = 15;
-            level = 5;
         }
 
         if (clearedLines > 40)
         {
-            fallSpeed = 13;
-            level = 6;
+            fallSpeed = 8;
+            level = 5;
         }
 
-        if (clearedLines > 50)
-        {
-            fallSpeed = 10;
-            level = 7;
-        }
         if (clearedLines > 60)
         {
-            fallSpeed = 7;
-            level = 8;
-        }
-        if (clearedLines > 75)
-        {
-            fallSpeed = 5;
-            level = 9;
-        }
-        if (clearedLines > 90)
-        {
             fallSpeed = 2;
-            level = 10;
+            level = 6;
         }
     }
     

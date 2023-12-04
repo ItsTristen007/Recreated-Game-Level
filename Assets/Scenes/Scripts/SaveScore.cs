@@ -13,4 +13,5 @@ public class SaveScore : MonoBehaviour
     {
         return PlayerPrefs.GetInt("HighScore");
     }
+    
 }
